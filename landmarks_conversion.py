@@ -38,11 +38,11 @@ def process_fcsv_files(base_path, fnames, out_name, sep):
     data = None
     for fname in fnames:
         if '.fcsv' in fname:
-            match = re.search('P\d\_\d+', fname)
+            match = re.search('P\d+\_\d+', fname)
             if match: 
                 individual = match.group(0) #getting individual's name
             else:
-                individual = fname.split('.fcsv')[0].split(sep)[-1] #getting individual's name
+            	continue
 
             df = pd.read_csv(base_path+sep+fname, skiprows=2) #skipping header on the fcsv files.
             df = df[df.columns[[1, 2, 3, -3, -1]]] #cleaning and renaming columns
@@ -67,7 +67,7 @@ def process_fcsv_files(base_path, fnames, out_name, sep):
     if data is None:
         print('There is not .fcsv files on {}. Please, use a valid directory.'.format(base_path))
     else:        
-        data.to_csv(base_path+sep+out_name, index=None)
+        data.to_csv(out_name, index=None)
         print('Data saved succesfully on {}'.format(out_name))
         #return data
 
@@ -99,7 +99,7 @@ def process_pts_files(base_path, fnames, out_name, sep):
     if data is None:
         print('There is not .pts files on \'{}\'. Please, use a valid directory.'.format(base_path))
     else:        
-        data.to_csv(base_path+sep+out_name, index=None)
+        data.to_csv(out_name, index=None)
         print('Data saved succesfully on \'{}\''.format(out_name))
         return data
 
