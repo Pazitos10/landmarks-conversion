@@ -28,9 +28,9 @@ def create_columns(how_many=1):
     return columns
 
 def organize_landmarks(landmarks, individual):
-   coords = [individual]
-   coords.extend(landmarks[['x','y','z']][landmarks['individual']==str(individual)].values.flatten().tolist())
-   return [coords]
+    coords = [individual]
+    coords.extend(landmarks[['x','y','z']][landmarks['individual']==str(individual)].values.flatten().tolist())
+    return [coords]
 
 ### Processing fcsv files (markups from 3dSlicer)
 
@@ -42,7 +42,7 @@ def process_fcsv_files(base_path, fnames, out_name, sep):
             if match: 
                 individual = match.group(0) #getting individual's name
             else:
-            	continue
+                continue
 
             df = pd.read_csv(base_path+sep+fname, skiprows=2) #skipping header on the fcsv files.
             df = df[df.columns[[1, 2, 3, -3, -1]]] #cleaning and renaming columns
