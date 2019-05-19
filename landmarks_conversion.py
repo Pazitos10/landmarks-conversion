@@ -94,7 +94,7 @@ def process_pts_files(base_path, fnames, out_name, sep):
             if data is None:
                 data = pd.DataFrame(data=landmarks, columns=new_columns)
             else:
-                data = data.append(pd.DataFrame(data=landmarks, columns=new_columns))
+                data = data.append(pd.DataFrame(data=landmarks, columns=new_columns), sort=False)
     
     if data is None:
         print('There is not .pts files on \'{}\'. Please, use a valid directory.'.format(base_path))
