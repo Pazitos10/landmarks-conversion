@@ -128,7 +128,7 @@ def process_pts_files(base_path, fnames, out_name, sep):
             incomplete_rows = incomplete_rows[data.columns] #reordering columns
             incomplete_rows.to_csv('datos_incompletos.csv', index=None) # saving incomplete data in a separated file
             data.drop(incomplete_rows.index) # removing incomplete rows from original data
-
+            data.dropna(1) # removes empty columns
         data.to_csv(out_name, index=None)
         print('Data saved succesfully on \'{}\''.format(out_name))
         return data
