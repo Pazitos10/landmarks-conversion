@@ -32,6 +32,29 @@ def organize_landmarks(landmarks, individual):
     coords.extend(landmarks[['x','y','z']][landmarks['individual']==str(individual)].values.flatten().tolist())
     return [coords]
 
+def get_incomplete_individuals(data):
+    # returns the individuals name or id of those who have more or less registered landmarks
+    # median ammount of complete columns - 1 (to avoid counting the column named 'individual') / 3 (because are 3D coordinates for each landmark) -> ammount of landmarks
+    median = (data.count(1).median() - 1) // 3
+    individuals = []
+    print("The common ammount of landmarks is: {}".format(median))
+    for i in range(data.shape[0]):
+        individual = int(data.iloc[i]["individual"])
+        cnames = []
+        complete_columns = 0
+        for c, cname in enumerate(data.columns):
+            isnull = pd.isnull(data.iloc[i,c])
+            if not isnull:
+                complete_columns += 1
+        complete_columns = (complete_columns - 1) // 3
+        if complete_columns > median:
+            print("Individual {} has more landmarks than it should -> {}".format(individual, complete_columns))
+            individuals.append(individual)
+        if complete_columns < median:
+            print("Individual {} has less landmarks than it should -> {}".format(individual, complete_columns))
+            individuals.append(str(individual))
+    return individuals
+
 ### Processing fcsv files (markups from 3dSlicer)
 
 def process_fcsv_files(base_path, fnames, out_name, sep):
@@ -94,15 +117,21 @@ def process_pts_files(base_path, fnames, out_name, sep):
             if data is None:
                 data = pd.DataFrame(data=landmarks, columns=new_columns)
             else:
-                data = data.append(pd.DataFrame(data=landmarks, columns=new_columns))
+                data = data.append(pd.DataFrame(data=landmarks, columns=new_columns), sort=False)
     
     if data is None:
         print('There is not .pts files on \'{}\'. Please, use a valid directory.'.format(base_path))
-    else:        
+    else:
+        incomplete_data = get_incomplete_individuals(data)
+        if incomplete_data:
+            incomplete_rows = data.query("individual in {}".format(incomplete_data))
+            incomplete_rows = incomplete_rows[data.columns] #reordering columns
+            incomplete_rows.to_csv('datos_incompletos.csv', index=None) # saving incomplete data in a separated file
+            data.drop(incomplete_rows.index) # removing incomplete rows from original data
+
         data.to_csv(out_name, index=None)
         print('Data saved succesfully on \'{}\''.format(out_name))
         return data
-
 
 
 if __name__ == '__main__':
